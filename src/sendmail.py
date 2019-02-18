@@ -3,7 +3,6 @@ import smtplib
 import time
 from email.mime.text import MIMEText
 from email.header import Header
-from src.film import get_film_list_zkm
 
 
 def generate_html(all_film):
@@ -21,29 +20,33 @@ def generate_html(all_film):
     return html
 
 
-def send_mail(parsed_html):
+def send_mail(parsed_html,zkm):
     sender = ''
     receivers = ['']  # 接收邮件，可设置为你的QQ邮箱或者其他邮箱
 
-    mail_host="smtp.gmail.com"#aspmx.l.google.com"  #设置服务器
+    mail_host = "smtp.gmail.com"#aspmx.l.google.com"  #设置服务器
     mail_user=""    #用户名
     mail_pass=""   #口令
 
-
+    if zkm==True:
+        header='ZKM Films'
+        theater='ZKM'
+    else:
+        header='Universium Films'
+        theater ='Universium'
 
     mail_msg =parsed_html
 
     message = MIMEText(mail_msg, 'html', 'utf-8')
-    message['From'] = Header("ZKM Films", 'utf-8')
-    message['To'] = Header("The me", 'utf-8')
+    message['From'] = Header(header, 'utf-8')
+    message['To'] = Header("Receiver List", 'utf-8')
 
-    subject = 'Films in ZKM of Week %s'%(time.strftime("%W"))
+    subject = 'Films in %s of Week %s'%(theater,time.strftime("%W"))
     message['Subject'] = Header(subject, 'utf-8')
 
-
     try:
-        smtpObj = smtplib.SMTP()
-        smtpObj.connect(mail_host, 587)    # 25 为 SMTP 端口号
+        smtpObj = smtplib.SMTP(host=mail_host)
+        smtpObj.connect(host=mail_host, port=587)    # 25 为 SMTP 端口号
         smtpObj.ehlo()
         smtpObj.starttls()
         smtpObj.ehlo()
